@@ -1,6 +1,4 @@
-"""Regression tests for issue #92 -- page-dates divider duplicating
-blog_list's own first-item border on pages with no body content.
-"""
+"""Tests for modules/content.html and the blog_list templates."""
 
 from __future__ import annotations
 
@@ -53,11 +51,10 @@ class PageDatesDividerTests(unittest.TestCase):
 
 
 class MissingFmtDateFilterTests(unittest.TestCase):
-    """Regression tests for issue #96 -- content.html crashed on any page
-    with a `date` in front matter when the `simple-blog-posts` plugin
-    wasn't installed/enabled, since `fmt_date` is only ever registered by
-    that plugin's `on_env` hook, yet page_dates is on by default and
-    content.html is the theme's own base template, used by every page."""
+    """`fmt_date` is only registered by BlogPlugin.on_env, which only
+    runs if `simple-blog-posts` is installed -- but page_dates is on by
+    default and content.html is the theme's own base template, used by
+    every page, regardless of whether that plugin is enabled."""
 
     def setUp(self) -> None:
         self.env = _template_env(register_fmt_date=False)
@@ -75,3 +72,34 @@ class MissingFmtDateFilterTests(unittest.TestCase):
         )
         html = self.template.render(config=config, page=page)
         self.assertIn("2025-09-15", html)
+
+
+class BlogListMissingFmtDateFilterTests(unittest.TestCase):
+    """A filter used directly inside a `{% for %}` (not a soft frame) is
+    validated at template *compile* time, so this crashed even when
+    `blog_posts` was empty, not just when the loop body actually ran."""
+
+    def setUp(self) -> None:
+        self.env = _template_env(register_fmt_date=False)
+        self.post = {
+            "title": "A",
+            "url": "post/a/",
+            "date": "2024-01-05",
+            "category": "",
+            "tags": [],
+            "author": "",
+            "avatar_url": "",
+            "description": "",
+            "image": "",
+        }
+        self.config = SimpleNamespace(theme=SimpleNamespace(blog=None))
+
+    def test_featured_layout_renders_without_crashing(self) -> None:
+        template = self.env.get_template("modules/blog_list_featured.html")
+        html = template.render(blog_posts=[self.post], config=self.config)
+        self.assertIn("2024-01-05", html)
+
+    def test_compact_layout_renders_without_crashing(self) -> None:
+        template = self.env.get_template("modules/blog_list_compact.html")
+        html = template.render(blog_posts=[self.post], config=self.config)
+        self.assertIn("2024-01-05", html)

@@ -106,6 +106,7 @@ class BlogListDateFormattingTests(unittest.TestCase):
         )
         self.env.filters["url"] = lambda path: path
         self.env.filters["fmt_date"] = format_date
+        self.env.globals["fmt_date"] = format_date
         self.post = {
             "title": "A",
             "url": "post/a/",
