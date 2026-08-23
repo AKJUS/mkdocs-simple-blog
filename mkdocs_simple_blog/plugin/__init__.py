@@ -47,9 +47,9 @@ class BlogPlugin(BasePlugin[BlogPluginConfig]):
 
     def on_env(self, env, config, files):
         locale = config.theme.get("locale") or "en"
-        env.filters["fmt_date"] = lambda value: format_date(
-            value, locale=locale
-        )
+        bound_format_date = lambda value: format_date(value, locale=locale)  # noqa: E731
+        env.filters["fmt_date"] = bound_format_date
+        env.globals["fmt_date"] = bound_format_date
         return env
 
     def on_files(self, files, config):
