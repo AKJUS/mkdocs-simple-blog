@@ -1,3 +1,8 @@
+## v0.6.1
+
+- [📦 PyPI - Build 0.6.1](https://github.com/FernandoCelmer/mkdocs-simple-blog/releases/tag/v0.6.1)
+- [🪲 Fix crash on any page with a date front matter field when simple-blog-posts isn't installed](https://github.com/FernandoCelmer/mkdocs-simple-blog/issues/96)
+
 ## v0.6.0
 
 - [📦 PyPI - Build 0.6.0](https://github.com/FernandoCelmer/mkdocs-simple-blog/releases/tag/v0.6.0)
