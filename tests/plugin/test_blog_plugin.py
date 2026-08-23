@@ -38,11 +38,12 @@ class BlogPluginTests(unittest.TestCase):
         if not dates_module._HAS_BABEL:
             self.skipTest("babel not installed")
 
-        env = SimpleNamespace(filters={})
+        env = SimpleNamespace(filters={}, globals={})
         self.plugin.on_env(env, config=fake_config(locale="pt"), files=[])
 
         formatted = env.filters["fmt_date"](datetime.date(2024, 1, 5))
         self.assertEqual(formatted, "5 de janeiro de 2024")
+        self.assertIs(env.globals["fmt_date"], env.filters["fmt_date"])
 
     def _file(self, rel_path: str) -> File:
         return make_file(self.temp_dir, rel_path)
